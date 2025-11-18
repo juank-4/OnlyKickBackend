@@ -113,7 +113,6 @@ public class VentaService {
     }
 
     public void deleteById(Integer id) {
-        // ... (tu lógica de borrado existente se mantiene igual) ...
         List<ProductosVenta> productosVenta = productosVentaRepository.findByVentaIdVenta(id);
         if (productosVenta != null && !productosVenta.isEmpty()) {
             productosVentaRepository.deleteAll(productosVenta);

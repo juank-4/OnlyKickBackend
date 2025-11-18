@@ -10,7 +10,6 @@ public class SecurityConfig {
     
     @Bean
     public PasswordEncoder passwordEncoder() {
-        //estandar moderno para hashear contraseñas
         return new BCryptPasswordEncoder();
     }
 }
