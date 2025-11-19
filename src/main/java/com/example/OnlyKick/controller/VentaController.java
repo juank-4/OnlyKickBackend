@@ -65,7 +65,7 @@ public class VentaController {
     
     @PutMapping("/{id}")
     public ResponseEntity<Venta> updateVenta(@PathVariable Integer id, @RequestBody Venta venta) {
-        venta.setId_venta(id);
+        venta.setIdVenta(id);
         Venta updated = ventaService.update(venta);
         return ResponseEntity.ok(updated);
     }

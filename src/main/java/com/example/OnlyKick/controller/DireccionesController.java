@@ -52,7 +52,7 @@ public class DireccionesController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Direcciones> update(@PathVariable Integer id, @RequestBody Direcciones direccion) {
-        direccion.setId_direccion(id);
+        direccion.setIdDireccion(id);
         return ResponseEntity.ok(direccionesService.save(direccion));
     }
 

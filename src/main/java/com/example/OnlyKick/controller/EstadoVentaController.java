@@ -45,7 +45,7 @@ public class EstadoVentaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<EstadoVenta> update(@PathVariable Integer id, @RequestBody EstadoVenta estado) {
-        estado.setId_estado(id);
+        estado.setIdEstado(id);
         return ResponseEntity.ok(estadoVentaService.save(estado));
     }
 

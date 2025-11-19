@@ -61,7 +61,7 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
-        usuario.setId_usuario(id);
+        usuario.setIdUsuario(id);
         Usuario updated = usuarioService.save(usuario); 
         return ResponseEntity.ok(updated);
     }

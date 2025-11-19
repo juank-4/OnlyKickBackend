@@ -45,7 +45,7 @@ public class RegionController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Region> update(@PathVariable Integer id, @RequestBody Region region) {
-        region.setId_region(id);
+        region.setIdRegion(id);
         return ResponseEntity.ok(regionService.save(region));
     }
 

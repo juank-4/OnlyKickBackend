@@ -23,7 +23,8 @@ public class Comuna {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_comuna;
+    @Column(name = "id_comuna")
+    private Integer idComuna;
 
     @Column(name = "nombre_comuna")
     private String nombreComuna;

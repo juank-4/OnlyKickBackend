@@ -21,7 +21,8 @@ public class Talla {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_talla;
+    @Column(name = "id_talla")
+    private Integer idTalla;
 
     @Column(name = "valor_talla")
     private String valorTalla;

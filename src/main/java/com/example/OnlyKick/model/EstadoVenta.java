@@ -21,7 +21,8 @@ public class EstadoVenta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_estado;
+    @Column(name = "id_estado")
+    private Integer idEstado;
 
     @Column(name = "nombre_estado")
     private String nombreEstado;

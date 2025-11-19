@@ -45,7 +45,7 @@ public class TallaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Talla> update(@PathVariable Integer id, @RequestBody Talla talla) {
-        talla.setId_talla(id);
+        talla.setIdTalla(id);
         return ResponseEntity.ok(tallaService.save(talla));
     }
 

@@ -21,7 +21,8 @@ public class MetodoEnvio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_metodo_envio;
+    @Column(name = "id_metodo_envio")
+    private Integer idMetodoEnvio;
 
     @Column(name = "nombre_metodo")
     private String nombreMetodo;

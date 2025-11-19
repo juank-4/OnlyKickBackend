@@ -52,7 +52,7 @@ public class ComunaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Comuna> update(@PathVariable Integer id, @RequestBody Comuna comuna) {
-        comuna.setId_comuna(id);
+        comuna.setIdComuna(id);
         return ResponseEntity.ok(comunaService.save(comuna));
     }
 

@@ -31,9 +31,9 @@ public class InventarioService {
     public Inventario save(Inventario inventario) {
         //Busca si ya existe la variante
         Optional<Inventario> existenteOpt = findStockByVariante(
-            inventario.getProducto().getId_producto(),
-            inventario.getTalla().getId_talla(),
-            inventario.getColor().getId_color()
+            inventario.getProducto().getIdProducto(),
+            inventario.getTalla().getIdTalla(),
+            inventario.getColor().getIdColor()
         );
 
         //Si existe, solo actualizamos el stock de esa entrada

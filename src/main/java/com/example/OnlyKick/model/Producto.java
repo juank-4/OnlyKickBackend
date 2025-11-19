@@ -24,7 +24,8 @@ public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_producto;
+    @Column(name = "id_producto")
+    private Integer idProducto; // CORREGIDO: id_producto -> idProducto
 
     @Column(name = "nombre_producto")
     private String nombreProducto;

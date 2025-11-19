@@ -23,7 +23,8 @@ public class Direcciones {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_direccion;
+    @Column(name = "id_direccion")
+    private Integer idDireccion;
 
     @Column
     private String calle;

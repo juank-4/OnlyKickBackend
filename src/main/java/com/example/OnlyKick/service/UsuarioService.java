@@ -59,7 +59,7 @@ public class UsuarioService {
     //Guarda un nuevo usuario cuando se registra
     public Usuario save(Usuario usuario) {
         // Nos aseguramos de que sea un ID nulo para que sea una creación
-        usuario.setId_usuario(null);
+        usuario.setIdUsuario(null);
         
         // Hasheamos la contraseña
         String passwordHasheada = passwordEncoder.encode(usuario.getPasswordHash());

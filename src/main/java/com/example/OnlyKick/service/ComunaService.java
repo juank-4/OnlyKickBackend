@@ -48,7 +48,7 @@ public class ComunaService {
         //Llamar al borrado manual de DireccionesService por cada una
         if (direcciones != null && !direcciones.isEmpty()) {
             for (Direcciones direccion : direcciones) {
-                direccionesService.deleteById(direccion.getId_direccion());
+                direccionesService.deleteById(direccion.getIdDireccion());
             }
         }
         //Borra la Comuna

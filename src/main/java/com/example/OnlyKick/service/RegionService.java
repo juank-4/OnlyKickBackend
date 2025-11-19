@@ -45,7 +45,7 @@ public class RegionService {
         //Llama al mEtodo de borrado manual de ComunaService por cada una
         if (comunas != null && !comunas.isEmpty()) {
             for (Comuna comuna : comunas) {
-                comunaService.deleteById(comuna.getId_comuna());
+                comunaService.deleteById(comuna.getIdComuna());
             }
         }
         //Borrar la Region

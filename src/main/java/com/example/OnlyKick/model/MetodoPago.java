@@ -21,7 +21,8 @@ public class MetodoPago {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_metodo_pago;
+    @Column(name = "id_metodo_pago")
+    private Integer idMetodoPago;
 
     @Column(name = "nombre_metodo")
     private String nombreMetodo;

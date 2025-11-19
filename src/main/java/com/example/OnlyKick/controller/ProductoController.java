@@ -68,7 +68,7 @@ public class ProductoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Producto> updateProducto(@PathVariable Integer id, @RequestBody Producto producto) {
-        producto.setId_producto(id);
+        producto.setIdProducto(id); // CORREGIDO
         Producto updated = productoService.save(producto);
         return ResponseEntity.ok(updated);
     }

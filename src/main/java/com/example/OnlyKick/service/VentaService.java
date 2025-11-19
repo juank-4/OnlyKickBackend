@@ -75,16 +75,16 @@ public class VentaService {
 
         for (ProductosVenta pv : productos) {
             Optional<Inventario> stockOpt = inventarioRepository.findByProductoIdProductoAndTallaIdTallaAndColorIdColor(
-                pv.getProducto().getId_producto(),
-                pv.getTalla().getId_talla(),
-                pv.getColor().getId_color()
+                pv.getProducto().getIdProducto(),
+                pv.getTalla().getIdTalla(),
+                pv.getColor().getIdColor()
             );
 
             if (!stockOpt.isPresent() || stockOpt.get().getStock() < pv.getCantidad()) {
                 throw new Exception("No hay stock suficiente para el producto: " + pv.getProducto().getNombreProducto());
             }
 
-            Producto p = productoRepository.findById(pv.getProducto().getId_producto()).orElseThrow();
+            Producto p = productoRepository.findById(pv.getProducto().getIdProducto()).orElseThrow();
             pv.setPrecioUnitario(p.getPrecioBase()); 
             
             totalCalculado = totalCalculado.add(
@@ -100,9 +100,9 @@ public class VentaService {
             productosVentaRepository.save(pv);
 
             Inventario inventario = inventarioRepository.findByProductoIdProductoAndTallaIdTallaAndColorIdColor(
-                pv.getProducto().getId_producto(),
-                pv.getTalla().getId_talla(),
-                pv.getColor().getId_color()
+                pv.getProducto().getIdProducto(),
+                pv.getTalla().getIdTalla(),
+                pv.getColor().getIdColor()
             ).get(); 
 
             inventario.setStock(inventario.getStock() - pv.getCantidad());

@@ -45,7 +45,7 @@ public class ColorController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Color> update(@PathVariable Integer id, @RequestBody Color color) {
-        color.setId_color(id);
+        color.setIdColor(id);
         return ResponseEntity.ok(colorService.save(color));
     }
 

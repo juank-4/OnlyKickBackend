@@ -27,7 +27,8 @@ public class Venta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_venta;
+    @Column(name = "id_venta")
+    private Integer idVenta;
 
     @Column(name = "fecha_venta", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)

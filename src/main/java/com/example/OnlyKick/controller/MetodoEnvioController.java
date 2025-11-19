@@ -45,7 +45,7 @@ public class MetodoEnvioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<MetodoEnvio> update(@PathVariable Integer id, @RequestBody MetodoEnvio metodo) {
-        metodo.setId_metodo_envio(id);
+        metodo.setIdMetodoEnvio(id);
         return ResponseEntity.ok(metodoEnvioService.save(metodo));
     }
 
