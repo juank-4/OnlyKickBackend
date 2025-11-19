@@ -21,7 +21,8 @@ public class Genero {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_genero;
+    @Column(name = "id_genero")
+    private Integer idGenero;
 
     @Column(name = "nombre_genero")
     private String nombreGenero;

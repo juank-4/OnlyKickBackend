@@ -45,7 +45,7 @@ public class GeneroController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Genero> update(@PathVariable Integer id, @RequestBody Genero genero) {
-        genero.setId_genero(id);
+        genero.setIdGenero(id);
         return ResponseEntity.ok(generoService.save(genero));
     }
 

@@ -45,7 +45,7 @@ public class MaterialController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Material> update(@PathVariable Integer id, @RequestBody Material material) {
-        material.setId_material(id);
+        material.setIdMaterial(id);
         return ResponseEntity.ok(materialService.save(material));
     }
 

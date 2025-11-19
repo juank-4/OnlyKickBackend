@@ -45,7 +45,7 @@ public class MarcaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Marca> update(@PathVariable Integer id, @RequestBody Marca marca) {
-        marca.setId_marca(id);
+        marca.setIdMarca(id);
         return ResponseEntity.ok(marcaService.save(marca));
     }
 

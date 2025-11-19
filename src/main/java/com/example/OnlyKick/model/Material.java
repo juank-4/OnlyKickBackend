@@ -21,7 +21,8 @@ public class Material {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_material;
+    @Column(name = "id_material")
+    private Integer idMaterial;
 
     @Column(name = "nombre_material")
     private String nombreMaterial;
