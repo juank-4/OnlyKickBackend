@@ -1,6 +1,7 @@
 package com.example.OnlyKick.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -59,6 +60,6 @@ public class Venta {
     private MetodoEnvio metodoEnvio;
 
     @OneToMany(mappedBy = "venta", fetch = FetchType.LAZY)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<ProductosVenta> productosVenta;
 }

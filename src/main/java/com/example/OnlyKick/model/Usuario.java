@@ -34,6 +34,9 @@ public class Usuario {
     @Column(unique = true)
     private String email;
 
+    @Column(name = "rol") 
+    private String rol; 
+
     @Column(name = "password_hash")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String passwordHash;

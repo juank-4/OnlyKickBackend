@@ -60,6 +60,11 @@ public class UsuarioService {
     public Usuario save(Usuario usuario) {
         // Nos aseguramos de que sea un ID nulo para que sea una creación
         usuario.setIdUsuario(null);
+
+        // Si el usuario no tiene rol (viene del registro público), le asignamos "user"
+        if (usuario.getRol() == null || usuario.getRol().isEmpty()) {
+            usuario.setRol("user");
+        }
         
         // Hasheamos la contraseña
         String passwordHasheada = passwordEncoder.encode(usuario.getPasswordHash());
