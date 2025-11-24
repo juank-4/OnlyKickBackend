@@ -13,6 +13,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -32,17 +35,25 @@ public class ProductosVenta {
     //Relaciones
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_venta")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Venta venta;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_producto")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Producto producto;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_talla")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Talla talla;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_color")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Color color;
 }

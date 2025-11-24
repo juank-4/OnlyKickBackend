@@ -15,6 +15,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.Set;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -53,8 +55,9 @@ public class Producto {
     @JoinColumn(name = "id_genero")
     private Genero genero;
 
-    @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
-    @JsonIgnore
+    @OneToMany(mappedBy = "producto", fetch = FetchType.EAGER)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Imagen> imagenes;
 
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)

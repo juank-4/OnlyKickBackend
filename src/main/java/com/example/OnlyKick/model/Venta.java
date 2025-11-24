@@ -1,6 +1,5 @@
 package com.example.OnlyKick.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +18,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
+
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -39,27 +41,39 @@ public class Venta {
     private BigDecimal totalVenta;
 
     //Relaciones
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_usuario")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_direccion")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Direcciones direccion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_estado")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private EstadoVenta estadoVenta;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_metodo_pago")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private MetodoPago metodoPago;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_metodo_envio")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private MetodoEnvio metodoEnvio;
 
     @OneToMany(mappedBy = "venta", fetch = FetchType.LAZY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<ProductosVenta> productosVenta;
 }
