@@ -85,6 +85,9 @@ public class UsuarioService {
             if (usuarioData.getEmail() != null) {
                 existingUsuario.setEmail(usuarioData.getEmail());
             }
+            if (usuarioData.getRol() != null) {
+                existingUsuario.setRol(usuarioData.getRol());
+            }
             // Si el usuario envió una nueva contraseña, la hasheamos
             if (usuarioData.getPasswordHash() != null) {
                 existingUsuario.setPasswordHash(passwordEncoder.encode(usuarioData.getPasswordHash()));
