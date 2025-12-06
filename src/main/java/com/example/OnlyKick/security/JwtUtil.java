@@ -14,7 +14,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // CAMBIO 1: Inyectamos el valor desde application.properties
+    //Inyectamos el valor desde application.properties
     @Value("${jwt.secret}")
     private String secretKey;
 
