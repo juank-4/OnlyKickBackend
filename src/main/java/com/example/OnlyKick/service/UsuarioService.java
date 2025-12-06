@@ -7,17 +7,22 @@ import com.example.OnlyKick.repository.DireccionesRepository;
 import com.example.OnlyKick.repository.UsuarioRepository;
 import com.example.OnlyKick.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
-@SuppressWarnings("null")
-public class UsuarioService {
+public class UsuarioService implements UserDetailsService { // <--- 1. Implementamos esta interfaz
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -29,26 +34,37 @@ public class UsuarioService {
     private VentaRepository ventaRepository;
 
     @Autowired
+    @Lazy // Usamos Lazy para evitar ciclos de dependencia con SecurityConfig
     private PasswordEncoder passwordEncoder;
 
-    //Obtiene a todos los usuarios
+    // --- NUEVO MÉTODO OBLIGATORIO DE SEGURIDAD ---
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
+
+        // Convertimos tu entidad Usuario a un objeto que Spring Security entienda
+        return new org.springframework.security.core.userdetails.User(
+                usuario.getEmail(),
+                usuario.getPasswordHash(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol())) // Asignamos el rol (ej: ROLE_ADMIN)
+        );
+    }
+    // ---------------------------------------------
+
     public List<Usuario> findAll() {
         return usuarioRepository.findAll();
     }
 
-    //Obtiene un usuario por su ID
     public Usuario findById(Integer id) {
         return usuarioRepository.findById(id).orElse(null);
     }
 
-    // Proceso de login de usuario
+    // Este login manual ya no es estrictamente necesario con JWT, pero lo dejamos por compatibilidad si quieres
     public Usuario login(Usuario usuarioLogin) {
-        // Buscamos al usuario por el email que viene en el objeto
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(usuarioLogin.getEmail());
-
         if (usuarioOpt.isPresent()) {
             Usuario usuarioEncontrado = usuarioOpt.get();
-            // Comparamos la contraseña con la de la BD
             if (passwordEncoder.matches(usuarioLogin.getPasswordHash(), usuarioEncontrado.getPasswordHash())) {
                 return usuarioEncontrado;
             }
@@ -56,60 +72,49 @@ public class UsuarioService {
         return null;
     }
 
-    //Guarda un nuevo usuario cuando se registra
     public Usuario save(Usuario usuario) {
-        // Nos aseguramos de que sea un ID nulo para que sea una creación
-        usuario.setIdUsuario(null);
-
-        // Si el usuario no tiene rol (viene del registro público), le asignamos "user"
-        if (usuario.getRol() == null || usuario.getRol().isEmpty()) {
-            usuario.setRol("user");
+        if (usuario.getIdUsuario() == null) { // Solo si es nuevo
+            usuario.setIdUsuario(null); // Asegurar creación
+            
+            // Asignar rol por defecto si no viene
+            if (usuario.getRol() == null || usuario.getRol().isEmpty()) {
+                usuario.setRol("user");
+            }
+            // Hashear contraseña
+            usuario.setPasswordHash(passwordEncoder.encode(usuario.getPasswordHash()));
         }
-        
-        // Hasheamos la contraseña
-        String passwordHasheada = passwordEncoder.encode(usuario.getPasswordHash());
-        usuario.setPasswordHash(passwordHasheada);
-        
+        return usuarioRepository.save(usuario);
+    }
+    
+    // Método para actualizar (si ya viene con ID, no hasheamos de nuevo a menos que cambie la password)
+    public Usuario update(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 
-    //Actualiza un usuario parcialmente para el endpoint PATCH
     public Usuario partialUpdate(Integer id, Usuario usuarioData) {
         Usuario existingUsuario = usuarioRepository.findById(id).orElse(null);
-        
         if (existingUsuario != null) {
-            // Actualiza solo los campos presentes en el JSON de entrada
-            if (usuarioData.getNombreUsuario() != null) {
-                existingUsuario.setNombreUsuario(usuarioData.getNombreUsuario());
-            }
-            if (usuarioData.getEmail() != null) {
-                existingUsuario.setEmail(usuarioData.getEmail());
-            }
-            if (usuarioData.getRol() != null) {
-                existingUsuario.setRol(usuarioData.getRol());
-            }
-            // Si el usuario envió una nueva contraseña, la hasheamos
-            if (usuarioData.getPasswordHash() != null) {
+            if (usuarioData.getNombreUsuario() != null) existingUsuario.setNombreUsuario(usuarioData.getNombreUsuario());
+            if (usuarioData.getEmail() != null) existingUsuario.setEmail(usuarioData.getEmail());
+            if (usuarioData.getRol() != null) existingUsuario.setRol(usuarioData.getRol());
+            
+            // Si viene contraseña nueva, la hasheamos
+            if (usuarioData.getPasswordHash() != null && !usuarioData.getPasswordHash().isEmpty()) {
                 existingUsuario.setPasswordHash(passwordEncoder.encode(usuarioData.getPasswordHash()));
             }
-            
             return usuarioRepository.save(existingUsuario);
         }
-        return null; // No se encontró el usuario
+        return null;
     }
 
-    // Eliminacion por cascada de un usuario
     public void deleteById(Integer id) {
-        //Buscamos todas las ventas asociadas a este usuario
         List<Venta> ventas = ventaRepository.findByUsuarioIdUsuario(id);
         for (Venta venta : ventas) {
-            venta.setUsuario(null); // Quitamos la referencia al usuario
+            venta.setUsuario(null);
             ventaRepository.save(venta);
         }
-        // Buscamos todas las direcciones asociadas, luego las borramos
         List<Direcciones> direcciones = direccionesRepository.findByUsuarioIdUsuario(id);
         direccionesRepository.deleteAll(direcciones);
-        //Borra al usuario por completo
         usuarioRepository.deleteById(id);
     }
 }
