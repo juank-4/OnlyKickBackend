@@ -1,19 +1,29 @@
 package com.example.OnlyKick.controller;
 
-import com.example.OnlyKick.model.Usuario;
-import com.example.OnlyKick.service.UsuarioService;
-import com.example.OnlyKick.security.JwtUtil; // <--- Importante
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map; // <--- Importante: Importamos el repositorio
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager; // <--- Importante
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken; // <--- Importante
-import org.springframework.security.core.Authentication; // <--- Importante
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping; // <--- Necesario para el Map
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.example.OnlyKick.model.Usuario;
+import com.example.OnlyKick.repository.UsuarioRepository;
+import com.example.OnlyKick.security.JwtUtil;
+import com.example.OnlyKick.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/v1/usuarios")
@@ -23,10 +33,13 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private AuthenticationManager authenticationManager; // <--- Nuevo
+    private UsuarioRepository usuarioRepository; // <--- Inyectamos esto para buscar al usuario en el login
 
     @Autowired
-    private JwtUtil jwtUtil; // <--- Nuevo
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping
     public ResponseEntity<List<Usuario>> getAllUsuarios() {
@@ -42,7 +55,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
-    // --- LOGIN MODIFICADO PARA DEVOLVER TOKEN ---
+    // --- LOGIN MODIFICADO PARA DEVOLVER TOKEN Y USUARIO ---
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuarioLogin) {
         try {
@@ -51,15 +64,24 @@ public class UsuarioController {
                     new UsernamePasswordAuthenticationToken(usuarioLogin.getEmail(), usuarioLogin.getPasswordHash())
             );
 
-            // 2. Si las credenciales son válidas, generamos el Token
+            // 2. Si las credenciales son válidas...
             if (authentication.isAuthenticated()) {
+                // A. Generamos el Token
                 String token = jwtUtil.generateToken(usuarioLogin.getEmail());
-                // Devolvemos el token en un JSON: { "token": "eyJhbGciOi..." }
-                return ResponseEntity.ok(Collections.singletonMap("token", token));
+                
+                // B. Buscamos el objeto Usuario completo en la base de datos
+                Usuario usuarioCompleto = usuarioRepository.findByEmail(usuarioLogin.getEmail())
+                        .orElse(null);
+
+                // C. Creamos una respuesta con ambos datos
+                Map<String, Object> response = new HashMap<>();
+                response.put("token", token);
+                response.put("user", usuarioCompleto); // Enviamos el usuario para que React pueda leer el rol
+
+                return ResponseEntity.ok(response);
             }
         
         } catch (Exception e) {
-            // Si falla, entra aquí
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error de autenticación");
