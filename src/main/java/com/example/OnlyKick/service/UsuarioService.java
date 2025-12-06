@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class UsuarioService implements UserDetailsService { // <--- 1. Implementamos esta interfaz
+public class UsuarioService implements UserDetailsService { 
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -34,10 +34,10 @@ public class UsuarioService implements UserDetailsService { // <--- 1. Implement
     private VentaRepository ventaRepository;
 
     @Autowired
-    @Lazy // Usamos Lazy para evitar ciclos de dependencia con SecurityConfig
+    @Lazy // Lazy para evitar ciclos de dependencia con SecurityConfig
     private PasswordEncoder passwordEncoder;
 
-    // --- NUEVO MÉTODO OBLIGATORIO DE SEGURIDAD ---
+    //Metodo obligatorio de seguridad!
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepository.findByEmail(email)
@@ -50,7 +50,6 @@ public class UsuarioService implements UserDetailsService { // <--- 1. Implement
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol())) // Asignamos el rol (ej: ROLE_ADMIN)
         );
     }
-    // ---------------------------------------------
 
     public List<Usuario> findAll() {
         return usuarioRepository.findAll();
@@ -60,7 +59,7 @@ public class UsuarioService implements UserDetailsService { // <--- 1. Implement
         return usuarioRepository.findById(id).orElse(null);
     }
 
-    // Este login manual ya no es estrictamente necesario con JWT, pero lo dejamos por compatibilidad si quieres
+    // Este login manual ya no es estrictamente necesario con JWT, pero lo dejamos por compatibilidad 
     public Usuario login(Usuario usuarioLogin) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(usuarioLogin.getEmail());
         if (usuarioOpt.isPresent()) {
