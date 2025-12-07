@@ -1,6 +1,9 @@
 package com.example.OnlyKick.model;
 
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,8 +15,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import java.util.Set;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -38,6 +42,8 @@ public class Direcciones {
     //Relaciones
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario")
+    @ToString.Exclude // <--- AGREGAR ESTO
+    @EqualsAndHashCode.Exclude // <--- Y ESTO
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)

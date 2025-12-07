@@ -1,7 +1,11 @@
 package com.example.OnlyKick.model;
 
+import java.time.LocalDateTime;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,9 +17,10 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
-import java.util.Set;
+import lombok.ToString;
+
 
 @Data
 @NoArgsConstructor
@@ -48,6 +53,9 @@ public class Usuario {
     //Relaciones
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+
     private Set<Direcciones> direcciones;
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
