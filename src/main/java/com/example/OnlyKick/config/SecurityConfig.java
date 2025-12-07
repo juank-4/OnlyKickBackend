@@ -2,6 +2,7 @@ package com.example.OnlyKick.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value; 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -30,6 +31,10 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final UserDetailsService userDetailsService;
 
+    // Inyectamos la URL del frontend desde application.properties
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     public SecurityConfig(JwtFilter jwtFilter, UserDetailsService userDetailsService) {
         this.jwtFilter = jwtFilter;
         this.userDetailsService = userDetailsService;
@@ -38,7 +43,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Configuración de CORS integrada
+            // 1. Configuración de CORS usando nuestra fuente personalizada
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
@@ -48,11 +53,19 @@ public class SecurityConfig {
                 
                 // Permitir VER productos e imágenes a cualquier visitante (GET)
                 .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/imagenes/**").permitAll() // Por si acaso
+                .requestMatchers(HttpMethod.GET, "/api/v1/imagenes/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/categorias/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/marcas/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/tallas/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/colores/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/generos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/materiales/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/regiones/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/comunas/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/metodos-envio/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/metodos-pago/**").permitAll()
 
-                // --- RUTAS PRIVADAS (Todo lo demás) ---
+                // --- RUTAS PRIVADAS (Todo lo demás requiere Token) ---
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -62,21 +75,16 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 2. Definición explícita de CORS para permitir tu Frontend
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Permitir explícitamente el origen de tu Frontend (Vite)
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); 
+        // Aquí usamos la variable dinámica. 
+        // En local será "http://localhost:5173", en Render será tu dominio de Vercel.
+        configuration.setAllowedOrigins(List.of(frontendUrl)); 
         
-        // Métodos permitidos
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        
-        // Headers permitidos (necesario para enviar el Token Authorization)
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        
-        // Permitir credenciales
         configuration.setAllowCredentials(true); 
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

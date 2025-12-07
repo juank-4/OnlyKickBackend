@@ -3,6 +3,7 @@ package com.example.OnlyKick.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,9 +21,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.OnlyKick.dto.UsuarioDTO; 
 import com.example.OnlyKick.model.Usuario;
 import com.example.OnlyKick.repository.UsuarioRepository;
 import com.example.OnlyKick.security.JwtUtil;
+import com.example.OnlyKick.service.DtoConverter; 
 import com.example.OnlyKick.service.UsuarioService;
 
 @RestController
@@ -33,7 +36,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private UsuarioRepository usuarioRepository; // <--- Inyectamos esto para buscar al usuario en el login
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -41,42 +44,62 @@ public class UsuarioController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    // Inyectamos el convertidor que creamos
+    @Autowired
+    private DtoConverter dtoConverter;
+
+    // --- OBTENER TODOS (Devuelve lista de DTOs) ---
     @GetMapping
-    public ResponseEntity<List<Usuario>> getAllUsuarios() {
+    public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
         List<Usuario> usuarios = usuarioService.findAll();
-        if (usuarios.isEmpty()) return ResponseEntity.noContent().build();
-        return ResponseEntity.ok(usuarios);
+        if (usuarios.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        
+        // Convertimos la lista de Entidades a lista de DTOs
+        List<UsuarioDTO> dtos = usuarios.stream()
+                .map(dtoConverter::convertToDto)
+                .collect(Collectors.toList());
+                
+        return ResponseEntity.ok(dtos);
     }
 
+    // --- OBTENER POR ID (Devuelve un DTO) ---
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getUsuarioById(@PathVariable Integer id) {
+    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable Integer id) {
         Usuario usuario = usuarioService.findById(id);
-        if (usuario == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(usuario);
+        if (usuario == null) {
+            return ResponseEntity.notFound().build();
+        }
+        // Convertimos a DTO antes de enviar
+        return ResponseEntity.ok(dtoConverter.convertToDto(usuario));
     }
 
-    // --- LOGIN MODIFICADO PARA DEVOLVER TOKEN Y USUARIO ---
+    // --- LOGIN (Devuelve Token + UsuarioDTO) ---
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuarioLogin) {
         try {
-            // 1. Spring Security intenta validar usuario y contraseña
+            // 1. Validar credenciales con Spring Security
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(usuarioLogin.getEmail(), usuarioLogin.getPasswordHash())
             );
 
-            // 2. Si las credenciales son válidas...
+            // 2. Si es válido...
             if (authentication.isAuthenticated()) {
-                // A. Generamos el Token
+                // A. Generar Token
                 String token = jwtUtil.generateToken(usuarioLogin.getEmail());
                 
-                // B. Buscamos el objeto Usuario completo en la base de datos
+                // B. Buscar usuario completo en BD
                 Usuario usuarioCompleto = usuarioRepository.findByEmail(usuarioLogin.getEmail())
                         .orElse(null);
 
-                // C. Creamos una respuesta con ambos datos
+                // C. Convertir a DTO (Aquí se limpia la recursión y se agregan los detalles de compras)
+                UsuarioDTO userDto = dtoConverter.convertToDto(usuarioCompleto);
+
+                // D. Construir respuesta
                 Map<String, Object> response = new HashMap<>();
                 response.put("token", token);
-                response.put("user", usuarioCompleto); // Enviamos el usuario para que React pueda leer el rol
+                response.put("user", userDto); // Enviamos el DTO seguro
 
                 return ResponseEntity.ok(response);
             }
@@ -86,28 +109,34 @@ public class UsuarioController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error de autenticación");
     }
-    // ---------------------------------------------
 
+    // --- REGISTRO (Devuelve el DTO del nuevo usuario) ---
     @PostMapping("/registro")
-    public ResponseEntity<Usuario> registrarUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioDTO> registrarUsuario(@RequestBody Usuario usuario) {
         Usuario nuevoUsuario = usuarioService.save(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
+        // Devolvemos el DTO para no mostrar el hash de la contraseña ni campos internos
+        return ResponseEntity.status(HttpStatus.CREATED).body(dtoConverter.convertToDto(nuevoUsuario));
     }
 
+    // --- ACTUALIZAR COMPLETO ---
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
         usuario.setIdUsuario(id);
         Usuario updated = usuarioService.save(usuario); 
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(dtoConverter.convertToDto(updated));
     }
     
+    // --- ACTUALIZAR PARCIAL ---
     @PatchMapping("/{id}")
-    public ResponseEntity<Usuario> partialUpdateUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioDTO> partialUpdateUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
         Usuario updated = usuarioService.partialUpdate(id, usuario);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dtoConverter.convertToDto(updated));
     }
 
+    // --- ELIMINAR ---
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
         usuarioService.deleteById(id);
