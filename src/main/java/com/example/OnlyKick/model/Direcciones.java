@@ -42,12 +42,14 @@ public class Direcciones {
     //Relaciones
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario")
-    @ToString.Exclude // <--- AGREGAR ESTO
-    @EqualsAndHashCode.Exclude // <--- Y ESTO
+    @ToString.Exclude 
+    @EqualsAndHashCode.Exclude 
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_comuna")
+    @ToString.Exclude 
+    @EqualsAndHashCode.Exclude
     private Comuna comuna;
 
     @OneToMany(mappedBy = "direccion", fetch = FetchType.LAZY)

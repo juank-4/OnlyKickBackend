@@ -1,6 +1,10 @@
 package com.example.OnlyKick.model;
 
+import java.math.BigDecimal;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,10 +16,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.math.BigDecimal;
-import java.util.Set;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
@@ -62,9 +64,13 @@ public class Producto {
 
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude 
+    @EqualsAndHashCode.Exclude
     private Set<Inventario> inventario;
 
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<ProductosVenta> productosVenta;
 }

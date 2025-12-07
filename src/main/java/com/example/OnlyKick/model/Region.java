@@ -1,6 +1,9 @@
 package com.example.OnlyKick.model;
 
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,8 +13,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import java.util.Set;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -30,5 +34,7 @@ public class Region {
     //Relaciones
     @OneToMany(mappedBy = "region", fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<Comuna> comunas;
 }
