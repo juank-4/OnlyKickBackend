@@ -45,12 +45,23 @@ public class DtoConverter {
         dto.setFecha(venta.getFechaVenta());
         dto.setTotal(venta.getTotalVenta());
         
-        if (venta.getEstadoVenta() != null) 
+        if (venta.getEstadoVenta() != null) {
             dto.setEstado(venta.getEstadoVenta().getNombreEstado());
+            dto.setIdEstado(venta.getEstadoVenta().getIdEstado()); // <--- Mapeamos el ID
+        }
             
         if (venta.getMetodoPago() != null)
             dto.setMetodoPago(venta.getMetodoPago().getNombreMetodo());
 
+        // Mapear Cliente (Si existe)
+        if (venta.getUsuario() != null) {
+            dto.setClienteNombre(venta.getUsuario().getNombreUsuario());
+            dto.setClienteEmail(venta.getUsuario().getEmail());
+        } else {
+            dto.setClienteNombre("Usuario Eliminado");
+        }
+
+        // Dirección (Código existente...)
         if (venta.getDireccion() != null) {
             String dirStr = venta.getDireccion().getCalle() + " " + venta.getDireccion().getNumero();
             if (venta.getDireccion().getComuna() != null) {
@@ -59,7 +70,7 @@ public class DtoConverter {
             dto.setDireccion(dirStr);
         }
 
-        // Convertir los productos de la venta
+        // Convertir los productos (Código existente...)
         if (venta.getProductosVenta() != null) {
             List<DetalleCompraDTO> items = venta.getProductosVenta().stream()
                 .map(this::convertDetalleToDto)

@@ -1,7 +1,8 @@
 package com.example.OnlyKick.controller;
 
-import com.example.OnlyKick.model.Venta;
-import com.example.OnlyKick.service.VentaService;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.example.OnlyKick.dto.CompraDTO;
+import com.example.OnlyKick.model.Venta;
+import com.example.OnlyKick.service.DtoConverter;
+import com.example.OnlyKick.service.VentaService;
 
 @RestController
 @RequestMapping("/api/v1/ventas")
@@ -24,13 +28,22 @@ public class VentaController {
     @Autowired
     private VentaService ventaService;
 
+    @Autowired
+    private DtoConverter dtoConverter;
+
     @GetMapping
-    public ResponseEntity<List<Venta>> getAllVentas() {
+    public ResponseEntity<List<CompraDTO>> getAllVentas() { 
         List<Venta> ventas = ventaService.findAll();
         if (ventas.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(ventas);
+        
+        // Convertimos la lista de Entidades a DTOs
+        List<CompraDTO> dtos = ventas.stream()
+            .map(dtoConverter::convertVentaToDto)
+            .collect(Collectors.toList());
+            
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/usuario/{idUsuario}")
