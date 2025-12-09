@@ -50,6 +50,8 @@ public class SecurityConfig {
                 // --- RUTAS PÚBLICAS ---
                 .requestMatchers("/api/v1/usuarios/login", "/api/v1/usuarios/registro").permitAll()
                 .requestMatchers("/doc/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+
+                .requestMatchers("/actuator/**").permitAll()
                 
                 // Permitir VER productos e imágenes a cualquier visitante (GET)
                 .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
