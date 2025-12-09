@@ -64,6 +64,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/comunas/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/metodos-envio/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/metodos-pago/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/inventario/**").permitAll()
 
                 // --- RUTAS PRIVADAS (Todo lo demás requiere Token) ---
                 .anyRequest().authenticated()
